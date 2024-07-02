@@ -48,36 +48,6 @@ struct ContentView: View {
         .padding(20)
     }
     
-    func cardThemeAdjuster(theme: String, symbol: String) -> some View {
-        return VStack {
-            Button(action: {
-                cardTheme = theme
-                if theme == "halloween" {
-                    var halloweenEmojis: Array<String> = ["👻", "🎃", "🕷", "😈", "💀", "🧙", "🙀", "🦁", "😱", "☠️", "🍭"]
-                    halloweenEmojis.shuffle()
-                    cardCount = 12
-                    let halfEmojis: ArraySlice<String> = halloweenEmojis[0..<(cardCount / 2)] + halloweenEmojis[0..<(cardCount / 2)]
-                    emojis = halfEmojis.shuffled()
-                } else if theme == "animal" {
-                    var animalEmojis: Array<String> = ["🐶", "🐰", "🐸", "🦆", "🐒", "🦅", "🐢", "🦞", "🐆", "🦧", "🦩"]
-                    animalEmojis.shuffle()
-                    cardCount = 14
-                    let halfEmojis: ArraySlice<String> = animalEmojis[0..<(cardCount / 2)] + animalEmojis[0..<(cardCount / 2)]
-                    emojis = halfEmojis.shuffled()
-                } else if theme == "food" {
-                    var foodEmojis: Array<String> = ["🍏", "🍇", "🥥", "🌽", "🧀", "🥦", "🍔", "🍕", "🌮", "🧁", "🍪"]
-                    foodEmojis.shuffle()
-                    cardCount = 16
-                    let halfEmojis: ArraySlice<String> = foodEmojis[0..<(cardCount / 2)] + foodEmojis[0..<(cardCount / 2)]
-                    emojis = halfEmojis.shuffled()
-                }
-            }, label: {
-                Text(symbol).font(.largeTitle)
-            })
-            Text(theme)
-        }
-    }
-        
     var halloweenTheme: some View {
         cardThemeAdjuster(theme: "halloween", symbol: "👻")
     }
@@ -89,11 +59,40 @@ struct ContentView: View {
     var foodTheme: some View {
         cardThemeAdjuster(theme: "food", symbol: "🥙")
     }
+    
+    func cardThemeAdjuster(theme: String, symbol: String) -> some View {
+        return VStack {
+            Button(action: {
+                cardTheme = theme
+                var fullEmojis: Array<String> = []
+                if theme == "halloween" {
+                    fullEmojis = ["👻", "🎃", "🕷", "😈", "💀", "🧙", "🙀", "🦁", "😱", "☠️", "🍭"]
+                    cardCount = 12
+                } else if theme == "animal" {
+                    fullEmojis = ["🐶", "🐰", "🐸", "🦆", "🐒", "🦅", "🐢", "🦞", "🐆", "🦧", "🦩"]
+                    cardCount = 14
+                } else if theme == "food" {
+                    fullEmojis = ["🍏", "🍇", "🥥", "🌽", "🧀", "🥦", "🍔", "🍕", "🌮", "🧁", "🍪"]
+                    cardCount = 16
+                }
+            emojis = createCardEmojis(themeEmojis: fullEmojis, count: cardCount)
+            }, label: {
+                Text(symbol).font(.largeTitle)
+            })
+            Text(theme)
+        }
+    }
+    
+    func createCardEmojis(themeEmojis: Array<String>, count: Int ) -> Array<String> {
+        let newEmojis = themeEmojis.shuffled()
+        let halfEmojis: ArraySlice<String> = newEmojis[0..<(count / 2)] + newEmojis[0..<(count / 2)]
+        return halfEmojis.shuffled()
+    }
 }
 
 struct CardView: View {
     let content: String
-    @State var isFaceUp = false
+    @State var isFaceUp = true
     
     var body: some View {
         ZStack {
